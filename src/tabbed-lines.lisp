@@ -1,0 +1,40 @@
+;;; tabbed-lines.lisp
+
+(in-package #:moongate)
+
+(defun make-tabbed-line (path length
+                         &key
+                          (sx 0)
+                          (sy 0)
+                          (dx 1)
+                          (dy 0)
+                          (depth 1/8)
+                          (tabs 3)
+                          (kerf *kerf*))
+  (flet ((rotx (x y)
+           (+ (* x dx) (* y dy)))
+         (roty (x y)
+           (+ (* x (- dy)) (* y dx))))
+    (let* ((x-kerf (rotx 0 kerf))
+           (y-kerf (roty 0 kerf))
+           (tab-distance-on-center (/ length tabs))
+           (tab-distance-on-center/4 (/ tab-distance-on-center 4))
+           (tab-x/4 (rotx tab-distance-on-center/4 0))
+           (tab-y/4 (roty tab-distance-on-center/4 0))
+           (depth-x (* depth dy))
+           (depth-y (* depth dx)))
+      (loop :for k :from 0 :below tabs
+            :for xx :from (+ sx) :by (* dx tab-distance-on-center)
+            :for yy :from (+ sy) :by (* dy tab-distance-on-center)
+            :do (cl-svg:with-path path
+                  (cl-svg:line-to (+ tab-x/4 depth-x xx)
+                                  (+ tab-y/4 depth-y yy))
+                  (cl-svg:line-to (+ tab-x/4 xx)
+                                  (+ tab-y/4 yy))
+                  (cl-svg:line-to (+ (* 3 tab-x/4) y-kerf y-kerf xx)
+                                  (+ (* 3 tab-y/4) x-kerf x-kerf yy))
+                  (cl-svg:line-to (+ (* 3 tab-x/4) y-kerf y-kerf depth-x xx)
+                                  (+ (* 3 tab-y/4) x-kerf x-kerf depth-y yy))
+                  (cl-svg:line-to (+ (* 4 tab-x/4) y-kerf y-kerf depth-x xx)
+                                  (+ (* 4 tab-y/4) x-kerf x-kerf depth-y yy))))))
+  path)

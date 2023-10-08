@@ -20,11 +20,20 @@
                                                      "size-constants"
                                                      "material-constants"
                                                      "connection-constants"))
+                 (:file "tabbed-lines" :depends-on ("package"
+                                                    "size-constants"
+                                                    "material-constants"
+                                                    "connection-constants"))
                  (:file "face-shapes" :depends-on ("package"
                                                    "size-constants"
                                                    "material-constants"
                                                    "connection-constants"
                                                    "tabbed-curves"))
+                 (:file "edge-shapes" :depends-on ("package"
+                                                   "size-constants"
+                                                   "material-constants"
+                                                   "connection-constants"
+                                                   "tabbed-lines"))
                  (:file "draw-moongate" :depends-on ("package"
                                                      "size-constants"
                                                      "material-constants"

@@ -25,9 +25,7 @@
                         (tabs-per-support-face *tabs-per-support-face*)
                         (tabs-per-support-edge *tabs-per-support-edge*)
                         (float-format-precision *float-format-precision*))
-  (declare (ignore inner-radius
-                   outer-radius
-                   portion
+  (declare (ignore portion
                    pieces
                    kerf
                    cut-color
@@ -48,11 +46,18 @@
         (let ((group (cl-svg:make-group scene ())))
           (apply #'draw-segment-face group :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
           (apply #'draw-segment-face group args))))
-    (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) (- (- (* sheet-width 3/8) 1/2))))
+    (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) (- (- (* sheet-width 3/8)) 1/2)))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
         (let ((group (cl-svg:make-group scene ())))
-          (apply #'draw-segment-face group :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
-          (apply #'draw-segment-face group args))))
+          (apply #'draw-segment-edge group :radius outer-radius
+                 :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
+          (apply #'draw-segment-edge group :radius outer-radius args))))
+    (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) (- (- (* sheet-width 5/8)) 1/2)))
+      (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
+        (let ((group (cl-svg:make-group scene ())))
+          (apply #'draw-segment-edge group :radius inner-radius
+                 :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
+          (apply #'draw-segment-edge group :radius inner-radius args))))
     (cl-svg:stream-out output-stream scene)))
 
 (defun draw-moongate (filename
