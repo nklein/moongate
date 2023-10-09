@@ -64,8 +64,32 @@
                 (cl-svg:line-to (- xx slot-width/2)
                                 (+ yy slot-height/2))
                 (cl-svg:close-path)))
-    path)
-  )
+    path))
+
+(defun make-access-holes-in-edge-path (xx width
+                                            &key
+                                              (kerf *kerf*)
+                                              (support-height *support-height*)
+                                              (support-material-thickness *support-material-thickness*)
+                                              (face-material-thickness *face-material-thickness*)
+                                            &allow-other-keys)
+  (let* ((path (cl-svg:make-path))
+         (height (* (- support-height (* 2 face-material-thickness)) 3/4))
+         (kerf/2 (/ kerf 2))
+         (slot-width/2 (+ (/ width 2) (- (/ support-material-thickness 2)) kerf/2))
+         (slot-height/2 (+ (/ height 2) kerf/2))
+         (yy 0))
+    (cl-svg:with-path path
+      (cl-svg:move-to (- xx slot-width/2)
+                      (- yy slot-height/2))
+      (cl-svg:line-to (+ xx slot-width/2)
+                      (- yy slot-height/2))
+      (cl-svg:line-to (+ xx slot-width/2)
+                      (+ yy slot-height/2))
+      (cl-svg:line-to (- xx slot-width/2)
+                      (+ yy slot-height/2))
+      (cl-svg:close-path))
+    path))
 
 (defun draw-segment-edge (scene
                           &rest
@@ -83,18 +107,27 @@
   (let* ((theta (/ (* portion 2 pi)
                    pieces))
          (length (* theta radius))
-         (support-distance-on-center (/ length supports-per-piece)))
+         (support-distance-on-center (/ length supports-per-piece))
+         (support-distance-on-center/2 (/ support-distance-on-center 2)))
     (cl-svg:draw scene (:path :d (apply #'make-segment-edge-path length args))
                  :fill "none"
                  :stroke cut-color
                  :stroke-width stroke-width)
 
-    (loop :repeat supports-per-piece
-          :for xx :from (- (/ support-distance-on-center 2)
+    (loop :for k :from 0 :below  supports-per-piece
+          :for xx :from (- support-distance-on-center/2
                            (/ length 2))
                   :by support-distance-on-center
           :do (cl-svg:draw scene (:path :d (apply #'make-support-tab-holes-in-edge-path xx args))
                            :fill "none"
                            :stroke cut-color
-                           :stroke-width stroke-width)))
+                           :stroke-width stroke-width)
+          :do (unless (zerop k)
+                (cl-svg:draw scene (:path :d (apply #'make-access-holes-in-edge-path
+                                                    (- xx support-distance-on-center/2)
+                                                    (* support-distance-on-center 3/4)
+                                                    args))
+                             :fill "none"
+                             :stroke cut-color
+                             :stroke-width stroke-width))))
   (+ support-height (* 2 kerf)))
