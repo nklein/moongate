@@ -3,7 +3,7 @@
 (in-package #:moongate)
 
 (defparameter *sheet-width* 48)
-(defparameter *sheet-height* 24)
+(defparameter *sheet-height* 36)
 
 (defparameter *dpi* 96
   "Dots per inch (inkscape assumes 96)")

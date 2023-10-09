@@ -62,12 +62,13 @@
                                             &key
                                               (outer-radius *outer-radius*)
                                               (inner-radius *inner-radius*)
+                                              (edge-material-thickness *edge-material-thickness*)
                                               (tabs-per-support-face *tabs-per-support-face*)
                                               (support-material-thickness *support-material-thickness*)
                                               (kerf *kerf*)
                                             &allow-other-keys)
 
-  (let* ((length (- outer-radius inner-radius))
+  (let* ((length (- outer-radius inner-radius (* 2 edge-material-thickness)))
          (tab-distance-on-center (/ length tabs-per-support-face))
          (tab-length (/ tab-distance-on-center 2))
          (tab-length/2 (/ tab-length 2))
@@ -82,7 +83,7 @@
              (+ (* x (+ support-material-thickness/2 (/ kerf 2)) (- ss))
                 (* y (+ tab-length/2 (/ kerf 2)) cc))))
       (loop :for k :from 0 :below tabs-per-support-face
-            :for rr :from (+ inner-radius tab-length) :by tab-distance-on-center
+            :for rr :from (+ inner-radius tab-length edge-material-thickness) :by tab-distance-on-center
             :do (let* ((cx (- (* rr ss) xoff))
                        (cy (- (* rr cc) yoff)))
                   (cl-svg:with-path path
@@ -103,8 +104,10 @@
                           &key
                             (outer-radius *outer-radius*)
                             (inner-radius *inner-radius*)
+                            (kerf *kerf*)
                             (portion *portion*)
                             (pieces *pieces*)
+                            (edge-material-thickness *edge-material-thickness*)
                             (cut-color *cut-color*)
                             (supports-per-piece *supports-per-piece*)
                             (stroke-width *stroke-width*)
@@ -130,8 +133,11 @@
                                                   yoff
                                                   :outer-radius outer-radius
                                                   :inner-radius inner-radius
+                                                  :edge-material-thickness edge-material-thickness
                                                   args))
                            :fill "none"
                            :stroke cut-color
                            :stroke-width stroke-width))
-    scene))
+    (+ (- outer-radius
+          (* inner-radius (cos theta/2)))
+       (* 2 kerf))))
