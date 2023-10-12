@@ -48,8 +48,8 @@
          (length (- support-height (* 2 face-material-thickness)))
          (tab-distance-on-center (/ length tabs-per-support-edge))
          (kerf/2 (/ kerf 2))
-         (slot-width/2 (+ (/ support-material-thickness 2) kerf/2))
-         (slot-height/2 (+ (/ tab-distance-on-center 4) kerf/2)))
+         (slot-width/2 (- (/ support-material-thickness 2) kerf/2))
+         (slot-height/2 (- (/ tab-distance-on-center 4) kerf/2)))
     (loop :repeat tabs-per-support-edge
           :for yy :from (- (+ (/ tab-distance-on-center 2) face-material-thickness)
                            (/ support-height 2))
@@ -76,8 +76,8 @@
   (let* ((path (cl-svg:make-path))
          (height (* (- support-height (* 2 face-material-thickness)) 3/4))
          (kerf/2 (/ kerf 2))
-         (slot-width/2 (+ (/ width 2) (- (/ support-material-thickness 2)) kerf/2))
-         (slot-height/2 (+ (/ height 2) kerf/2))
+         (slot-width/2 (- (/ width 2) (/ support-material-thickness 2) kerf/2))
+         (slot-height/2 (- (/ height 2) kerf/2))
          (yy 0))
     (cl-svg:with-path path
       (cl-svg:move-to (- xx slot-width/2)

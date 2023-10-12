@@ -77,11 +77,11 @@
          (cc (cos phi))
          (path (cl-svg:make-path)))
     (flet ((rotx (x y)
-             (+ (* x (+ support-material-thickness/2 (/ kerf 2)) cc)
-                (* y (+ tab-length/2 (/ kerf 2)) ss)))
+             (+ (* x (+ support-material-thickness/2 (/ (- kerf) 2)) cc)
+                (* y (+ tab-length/2 (/ (- kerf) 2)) ss)))
            (roty (x y)
-             (+ (* x (+ support-material-thickness/2 (/ kerf 2)) (- ss))
-                (* y (+ tab-length/2 (/ kerf 2)) cc))))
+             (+ (* x (+ support-material-thickness/2 (/ (- kerf) 2)) (- ss))
+                (* y (+ tab-length/2 (/ (- kerf) 2)) cc))))
       (loop :for k :from 0 :below tabs-per-support-face
             :for rr :from (+ inner-radius tab-length edge-material-thickness) :by tab-distance-on-center
             :do (let* ((cx (- (* rr ss) xoff))
