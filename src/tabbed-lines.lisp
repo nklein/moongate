@@ -25,8 +25,8 @@
            (depth-x (* depth dy))
            (depth-y (* depth dx)))
       (loop :for k :from 0 :below tabs
-            :for xx :from (+ sx) :by (* dx tab-distance-on-center)
-            :for yy :from (+ sy) :by (* dy tab-distance-on-center)
+            :for xx := (+ sx) :then (+ xx (* dx tab-distance-on-center))
+            :for yy := (+ sy) :then (+ yy (* dy tab-distance-on-center))
             :do (cl-svg:with-path path
                   (cl-svg:line-to (+ tab-x/4 depth-x xx)
                                   (+ tab-y/4 depth-y yy))

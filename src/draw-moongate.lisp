@@ -8,6 +8,7 @@
                       &key
                         (inner-radius *inner-radius*)
                         (outer-radius *outer-radius*)
+                        (support-height *support-height*)
                         (portion *portion*)
                         (pieces *pieces*)
                         (kerf *kerf*)
@@ -25,7 +26,8 @@
                         (tabs-per-support-face *tabs-per-support-face*)
                         (tabs-per-support-edge *tabs-per-support-edge*)
                         (float-format-precision *float-format-precision*))
-  (declare (ignore portion
+  (declare (ignore support-height
+                   portion
                    pieces
                    kerf
                    cut-color

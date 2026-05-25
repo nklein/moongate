@@ -125,7 +125,7 @@
                  :fill "none"
                  :stroke cut-color
                  :stroke-width stroke-width)
-    (loop :for phi :from (- theta/2 phi-increment/2) :by (- phi-increment)
+    (loop :for phi :downfrom (- theta/2 phi-increment/2) :by phi-increment
           :repeat supports-per-piece
           :do (cl-svg:draw scene (:path :d (apply #'make-support-tab-holes-in-face-path
                                                   phi
