@@ -6,6 +6,7 @@
                       &rest
                         args
                       &key
+                        (draw-nominal nil)
                         (inner-radius *inner-radius*)
                         (outer-radius *outer-radius*)
                         (support-height *support-height*)
@@ -13,8 +14,9 @@
                         (pieces *pieces*)
                         (kerf *kerf*)
                         (cut-color *cut-color*)
+                        (cut-opacity *cut-opacity*)
                         (mark-color *mark-color*)
-                        (stroke-width *stroke-width*)
+                        (mark-opacity *mark-opacity*)
                         (sheet-width *sheet-width*)
                         (sheet-height *sheet-height*)
                         (dpi *dpi*)
@@ -31,6 +33,7 @@
                    pieces
                    kerf
                    cut-color
+                   cut-opacity
                    edge-material-thickness
                    face-material-thickness
                    support-material-thickness
@@ -48,23 +51,35 @@
     (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) yoff))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
         (let ((group (cl-svg:make-group scene ())))
-          (apply #'draw-segment-face group :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
+          (when draw-nominal
+            (apply #'draw-segment-face group :kerf 0
+                                             :cut-color mark-color
+                                             :cut-opacity mark-opacity
+                                             args))
           (setf last-height (apply #'draw-segment-face group args))
           group)))
     (decf yoff last-height)
     (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) yoff))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
         (let ((group (cl-svg:make-group scene ())))
-          (apply #'draw-segment-edge group :radius outer-radius
-                 :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
+          (when draw-nominal
+            (apply #'draw-segment-edge group :radius outer-radius
+                                             :kerf 0
+                                             :cut-color mark-color
+                                             :cut-opacity mark-opacity
+                                             args))
           (setf last-height (apply #'draw-segment-edge group :radius outer-radius args))
           group)))
     (decf yoff (1+ last-height))
     (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) yoff))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
         (let ((group (cl-svg:make-group scene ())))
-          (apply #'draw-segment-edge group :radius inner-radius
-                 :kerf 0 :cut-color mark-color :stroke-width (/ stroke-width 2) args)
+          (when draw-nominal
+            (apply #'draw-segment-edge group :radius inner-radius
+                                             :kerf 0
+                                             :cut-color mark-color
+                                             :cut-opacity mark-opacity
+                                             args))
           (setf last-height (apply #'draw-segment-edge group :radius inner-radius args))
           group)))
     (cl-svg:stream-out output-stream scene)))
@@ -73,6 +88,7 @@
                       &rest
                         args
                       &key
+                        (draw-nominal nil)
                         (inner-radius *inner-radius*)
                         (outer-radius *outer-radius*)
                         (support-height *support-height*)
@@ -80,8 +96,9 @@
                         (pieces *pieces*)
                         (kerf *kerf*)
                         (cut-color *cut-color*)
+                        (cut-opacity *cut-opacity*)
                         (mark-color *mark-color*)
-                        (stroke-width *stroke-width*)
+                        (mark-opacity *mark-opacity*)
                         (sheet-width *sheet-width*)
                         (sheet-height *sheet-height*)
                         (dpi *dpi*)
@@ -93,15 +110,17 @@
                         (tabs-per-support-face *tabs-per-support-face*)
                         (tabs-per-support-edge *tabs-per-support-edge*)
                         (float-format-precision *float-format-precision*))
-  (declare (ignore inner-radius
+  (declare (ignore draw-nominal
+                   inner-radius
                    outer-radius
                    support-height
                    portion
                    pieces
                    kerf
                    cut-color
+                   cut-opacity
                    mark-color
-                   stroke-width
+                   mark-opacity
                    sheet-width
                    sheet-height
                    dpi

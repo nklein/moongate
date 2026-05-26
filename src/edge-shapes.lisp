@@ -57,12 +57,12 @@
           :do (cl-svg:with-path path
                 (cl-svg:move-to (- xx slot-width/2)
                                 (- yy slot-height/2))
-                (cl-svg:line-to (+ xx slot-width/2)
-                                (- yy slot-height/2))
-                (cl-svg:line-to (+ xx slot-width/2)
-                                (+ yy slot-height/2))
                 (cl-svg:line-to (- xx slot-width/2)
                                 (+ yy slot-height/2))
+                (cl-svg:line-to (+ xx slot-width/2)
+                                (+ yy slot-height/2))
+                (cl-svg:line-to (+ xx slot-width/2)
+                                (- yy slot-height/2))
                 (cl-svg:close-path)))
     path))
 
@@ -82,12 +82,12 @@
     (cl-svg:with-path path
       (cl-svg:move-to (- xx slot-width/2)
                       (- yy slot-height/2))
-      (cl-svg:line-to (+ xx slot-width/2)
-                      (- yy slot-height/2))
-      (cl-svg:line-to (+ xx slot-width/2)
-                      (+ yy slot-height/2))
       (cl-svg:line-to (- xx slot-width/2)
                       (+ yy slot-height/2))
+      (cl-svg:line-to (+ xx slot-width/2)
+                      (+ yy slot-height/2))
+      (cl-svg:line-to (+ xx slot-width/2)
+                      (- yy slot-height/2))
       (cl-svg:close-path))
     path))
 
@@ -102,32 +102,25 @@
                             (supports-per-piece *supports-per-piece*)
                             (support-height *support-height*)
                             (cut-color *cut-color*)
-                            (stroke-width *stroke-width*)
+                            (cut-opacity *cut-opacity*)
                           &allow-other-keys)
   (let* ((theta (/ (* portion 2 pi)
                    pieces))
          (length (* theta radius))
          (support-distance-on-center (/ length supports-per-piece))
          (support-distance-on-center/2 (/ support-distance-on-center 2)))
-    (cl-svg:draw scene (:path :d (apply #'make-segment-edge-path length args))
-                 :fill "none"
-                 :stroke cut-color
-                 :stroke-width stroke-width)
-
-    (loop :for k :from 0 :below  supports-per-piece
-          :for xx :from (- support-distance-on-center/2
-                           (/ length 2))
-                  :by support-distance-on-center
-          :do (cl-svg:draw scene (:path :d (apply #'make-support-tab-holes-in-edge-path xx args))
-                           :fill "none"
-                           :stroke cut-color
-                           :stroke-width stroke-width)
-          :do (unless (zerop k)
-                (cl-svg:draw scene (:path :d (apply #'make-access-holes-in-edge-path
-                                                    (- xx support-distance-on-center/2)
-                                                    (* support-distance-on-center 3/4)
-                                                    args))
-                             :fill "none"
-                             :stroke cut-color
-                             :stroke-width stroke-width))))
+    (cl-svg:draw scene (:path :d (apply #'concatenate 'string
+                                        (apply #'make-segment-edge-path length args)
+                                        (loop :for k :from 0 :below  supports-per-piece
+                                              :for xx :from (- support-distance-on-center/2
+                                                               (/ length 2))
+                                              :by support-distance-on-center
+                                              :collect (apply #'make-support-tab-holes-in-edge-path xx args)
+                                              :unless (zerop k)
+                                                :collect (apply #'make-access-holes-in-edge-path
+                                                                (- xx support-distance-on-center/2)
+                                                                (* support-distance-on-center 3/4)
+                                                                args))))
+                 :fill cut-color
+                 :fill-opacity cut-opacity))
   (+ support-height (* 2 kerf)))
