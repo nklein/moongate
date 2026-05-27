@@ -135,14 +135,13 @@
                              (outer-radius *outer-radius*)
                              (face-material-thickness *face-material-thickness*)
                              (edge-material-thickness *edge-material-thickness*)
-                             (support-material-thickness *support-material-thickness*)
                              (support-height *support-height*)
                              (cut-color *cut-color*)
                              (cut-opacity *cut-opacity*)
                              (tabs-per-support-edge *tabs-per-support-edge*)
                              (tabs-per-support-face *tabs-per-support-face*)
                            &allow-other-keys)
-  (let* ((height (support-length support-height support-material-thickness))
+  (let* ((height (support-length support-height face-material-thickness))
          (width (support-length (- outer-radius inner-radius)
                                 edge-material-thickness))
          (height/2 (/ height 2))
@@ -151,7 +150,7 @@
          (path (cl-svg:make-path)))
     (cl-svg:with-path path
       (cl-svg:move-to (- (+ width/2 kerf/2))
-                      (- (+ height/2 kerf/2))))
+                      (- (+ height/2 kerf/2 face-material-thickness))))
     (make-tabbed-line path width
                       :sx (- (+ width/2 kerf/2))
                       :sy (- (+ height/2 kerf/2 face-material-thickness))
@@ -162,9 +161,9 @@
                       :kerf kerf)
     (cl-svg:with-path path
       (cl-svg:line-to (+ width/2 kerf/2)
-                      (- (+ height/2 kerf/2))))
+                      (- (+ height/2 kerf/2 face-material-thickness))))
     (make-tabbed-line path height
-                      :sx (+ width/2 kerf/2 edge-material-thickness)
+                      :sx (+ width/2 kerf/2)
                       :sy (- (+ height/2 kerf/2))
                       :dx 0
                       :dy 1
@@ -173,7 +172,7 @@
                       :kerf kerf)
     (cl-svg:with-path path
       (cl-svg:line-to (+ width/2 kerf/2)
-                      (+ height/2 kerf/2)))
+                      (+ height/2 kerf/2 edge-material-thickness)))
     (make-tabbed-line path width
                       :sx (+ width/2 kerf/2)
                       :sy (+ height/2 kerf/2 face-material-thickness)
@@ -185,10 +184,10 @@
 
     (cl-svg:with-path path
       (cl-svg:line-to (- (+ width/2 kerf/2))
-                      (+ height/2 kerf/2)))
+                      (+ height/2 kerf/2 edge-material-thickness)))
 
     (make-tabbed-line path height
-                      :sx (- (+ width/2 kerf/2 edge-material-thickness))
+                      :sx (- (+ width/2 kerf/2))
                       :sy (+ height/2 kerf/2)
                       :dx 0
                       :dy -1
