@@ -27,6 +27,7 @@
                         (supports-per-piece *supports-per-piece*)
                         (tabs-per-support-face *tabs-per-support-face*)
                         (tabs-per-support-edge *tabs-per-support-edge*)
+                        (access-holes-p *access-holes-p*)
                         (float-format-precision *float-format-precision*))
   (declare (ignore support-height
                    portion
@@ -40,7 +41,8 @@
                    tabs-per-face-edge
                    supports-per-piece
                    tabs-per-support-face
-                   tabs-per-support-edge))
+                   tabs-per-support-edge
+                   access-holes-p))
   (let* ((cl-svg:*float-format-precision* float-format-precision)
          (scene (cl-svg:make-svg-toplevel 'cl-svg:svg-1.1-toplevel
                                           :width (* sheet-width dpi)
@@ -121,6 +123,7 @@
                         (supports-per-piece *supports-per-piece*)
                         (tabs-per-support-face *tabs-per-support-face*)
                         (tabs-per-support-edge *tabs-per-support-edge*)
+                        (access-holes-p *access-holes-p*)
                         (float-format-precision *float-format-precision*))
   (declare (ignore draw-nominal
                    inner-radius
@@ -143,6 +146,7 @@
                    supports-per-piece
                    tabs-per-support-face
                    tabs-per-support-edge
+                   access-holes-p
                    float-format-precision))
   (with-open-file (output-stream filename
                                  :direction :output

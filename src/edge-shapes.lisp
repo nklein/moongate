@@ -106,6 +106,7 @@
                             (support-height *support-height*)
                             (cut-color *cut-color*)
                             (cut-opacity *cut-opacity*)
+                            (access-holes-p *access-holes-p*)
                           &allow-other-keys)
   (let* ((theta (/ (* portion 2 pi)
                    pieces))
@@ -119,7 +120,7 @@
                                                                (/ length 2))
                                               :by support-distance-on-center
                                               :collect (apply #'make-support-tab-holes-in-edge-path xx args)
-                                              :unless (zerop k)
+                                              :when (and access-holes-p (not (zerop k)))
                                                 :collect (apply #'make-access-holes-in-edge-path
                                                                 (- xx support-distance-on-center/2)
                                                                 (* support-distance-on-center 3/4)
