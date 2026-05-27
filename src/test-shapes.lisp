@@ -16,8 +16,7 @@
   (cl-svg:draw group (:path :d (concatenate 'string
                                             (cl-svg:move-to (- (/ obj-width 2))
                                                             (- (/ obj-height 2)))
-                                            (cl-svg:line-to (+ (/ obj-width 2)
-                                                               (* material-thickness 2))
+                                            (cl-svg:line-to (/ obj-width 2)
                                                             (- (/ obj-height 2)))
 
                                             (let ((path (cl-svg:make-path)))
@@ -32,7 +31,7 @@
                                                                           :sx sx
                                                                           :sy sy
                                                                           :dx 0
-                                                                          :dy -1
+                                                                          :dy 1
                                                                           :tabs 1
                                                                           :kerf kerf
                                                                           :depth (* material-thickness -2)))
@@ -55,8 +54,6 @@
                            (cut-opacity *cut-opacity*)
                            (mark-color *mark-color*)
                            (mark-opacity *mark-opacity*)
-                           (sheet-width *sheet-width*)
-                           (sheet-height *sheet-height*)
                            (dpi *dpi*)
                            (material-thickness *face-material-thickness*)
                            (float-format-precision *float-format-precision*))
@@ -65,11 +62,13 @@
                    cut-color
                    cut-opacity))
   (let* ((cl-svg:*float-format-precision* float-format-precision)
+         (obj-height (* material-thickness (+ (* 2 stops) 1)))
+         (obj-width (* material-thickness 5))
+         (sheet-width (+ obj-width (* 2 material-thickness)))
+         (sheet-height (+ obj-height (* 2 material-thickness)))
          (scene (cl-svg:make-svg-toplevel 'cl-svg:svg-1.1-toplevel
                                           :width (* sheet-width dpi)
-                                          :height (* sheet-height dpi)))
-         (obj-height (* material-thickness (+ (* 2 stops) 2)))
-         (obj-width (* material-thickness 4)))
+                                          :height (* sheet-height dpi))))
     (cl-svg:title scene "depth-test")
     (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) (/ sheet-height -2)))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
@@ -96,8 +95,6 @@
                           (cut-opacity *cut-opacity*)
                           (mark-color *mark-color*)
                           (mark-opacity *mark-opacity*)
-                          (sheet-width *sheet-width*)
-                          (sheet-height *sheet-height*)
                           (dpi *dpi*)
                           (material-thickness *face-material-thickness*)
                           (float-format-precision *float-format-precision*))
@@ -109,8 +106,6 @@
                    cut-opacity
                    mark-color
                    mark-opacity
-                   sheet-width
-                   sheet-height
                    dpi
                    material-thickness
                    float-format-precision))
