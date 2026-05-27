@@ -2,7 +2,7 @@
 
 (in-package #:moongate)
 
-(defun make-tabbed-line (path length
+(defun make-tabbed-line-orig (path length
                          &key
                           (sx 0)
                           (sy 0)
@@ -12,9 +12,9 @@
                           (tabs 3)
                           (kerf *kerf*))
   (flet ((rotx (x y)
-           (+ (* x dx) (* y dy)))
+           (+ (* x dx) (* y (- dy))))
          (roty (x y)
-           (+ (* x (- dy)) (* y dx))))
+           (+ (* x dy) (* y dx))))
     (let* ((kerf/2 (/ kerf 2))
            (x-kerf (rotx 0 kerf/2))
            (y-kerf (roty 0 kerf/2))
@@ -22,8 +22,8 @@
            (tab-distance-on-center/4 (/ tab-distance-on-center 4))
            (tab-x/4 (rotx tab-distance-on-center/4 0))
            (tab-y/4 (roty tab-distance-on-center/4 0))
-           (depth-x (* depth dy))
-           (depth-y (* depth dx)))
+           (depth-x (* dy depth))
+           (depth-y (* dx depth)))
       (loop :for k :from 0 :below tabs
             :for xx := (+ sx) :then (+ xx (* dx tab-distance-on-center))
             :for yy := (+ sy) :then (+ yy (* dy tab-distance-on-center))
@@ -38,4 +38,40 @@
                                   (+ (* 3 tab-y/4) x-kerf x-kerf depth-y yy))
                   (cl-svg:line-to (+ (* 4 tab-x/4) y-kerf y-kerf depth-x xx)
                                   (+ (* 4 tab-y/4) x-kerf x-kerf depth-y yy))))))
+  path)
+
+(defun make-tabbed-line (path length
+                         &key
+                          (sx 0)
+                          (sy 0)
+                          (dx 1)
+                          (dy 0)
+                          (depth 1/8)
+                          (tabs 3)
+                          (kerf *kerf*))
+  (labels ((rotx (x y)
+             (+ (* x dx) (* y (- dy))))
+           (roty (x y)
+             (+ (* x dy) (* y dx)))
+           (line-to-r (xx yy)
+             (let ((x (rotx xx yy))
+                   (y (roty xx yy)))
+               (cl-svg:line-to-r x y))))
+    (let* ((kerf/2 (/ kerf 2)) (tab-distance-on-center (/ length tabs))
+           (tab-distance-on-center/4 (/ tab-distance-on-center 4)))
+      (cl-svg:line-to sx sy)
+      (cl-svg:with-path path
+        (line-to-r kerf/2 0))
+      (loop :for k :from 0 :below tabs
+            :do (cl-svg:with-path path
+                  (line-to-r (- tab-distance-on-center/4 kerf/2)
+                             0)
+                  (line-to-r 0
+                             (- (+ depth kerf/2)))
+                  (line-to-r (+ (* 2 tab-distance-on-center/4) kerf)
+                             0)
+                  (line-to-r 0
+                             (+ depth kerf/2))
+                  (line-to-r (- tab-distance-on-center/4 kerf/2)
+                             0)))))
   path)

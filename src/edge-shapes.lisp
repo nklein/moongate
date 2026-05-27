@@ -36,6 +36,9 @@
       (cl-svg:close-path))
     path))
 
+(defun support-length (support-height material-thickness)
+  (- support-height (* 2 material-thickness)))
+
 (defun make-support-tab-holes-in-edge-path (xx
                                             &key
                                               (kerf *kerf*)
@@ -45,7 +48,7 @@
                                               (tabs-per-support-edge *tabs-per-support-edge*)
                                             &allow-other-keys)
   (let* ((path (cl-svg:make-path))
-         (length (- support-height (* 2 face-material-thickness)))
+         (length (support-length support-height face-material-thickness))
          (tab-distance-on-center (/ length tabs-per-support-edge))
          (kerf/2 (/ kerf 2))
          (slot-width/2 (- (/ support-material-thickness 2) kerf/2))
@@ -124,3 +127,79 @@
                  :fill cut-color
                  :fill-opacity cut-opacity))
   (+ support-height (* 2 kerf)))
+
+(defun draw-support-piece (scene
+                           &key
+                             (kerf *kerf*)
+                             (inner-radius *inner-radius*)
+                             (outer-radius *outer-radius*)
+                             (face-material-thickness *face-material-thickness*)
+                             (edge-material-thickness *edge-material-thickness*)
+                             (support-material-thickness *support-material-thickness*)
+                             (support-height *support-height*)
+                             (cut-color *cut-color*)
+                             (cut-opacity *cut-opacity*)
+                             (tabs-per-support-edge *tabs-per-support-edge*)
+                             (tabs-per-support-face *tabs-per-support-face*)
+                           &allow-other-keys)
+  (let* ((height (support-length support-height support-material-thickness))
+         (width (support-length (- outer-radius inner-radius)
+                                edge-material-thickness))
+         (height/2 (/ height 2))
+         (width/2 (/ width 2))
+         (kerf/2 (/ kerf 2))
+         (path (cl-svg:make-path)))
+    (cl-svg:with-path path
+      (cl-svg:move-to (- (+ width/2 kerf/2))
+                      (- (+ height/2 kerf/2))))
+    (make-tabbed-line path width
+                      :sx (- (+ width/2 kerf/2))
+                      :sy (- (+ height/2 kerf/2 face-material-thickness))
+                      :dx 1
+                      :dy 0
+                      :depth face-material-thickness
+                      :tabs tabs-per-support-face
+                      :kerf kerf)
+    (cl-svg:with-path path
+      (cl-svg:line-to (+ width/2 kerf/2)
+                      (- (+ height/2 kerf/2))))
+    (make-tabbed-line path height
+                      :sx (+ width/2 kerf/2 edge-material-thickness)
+                      :sy (- (+ height/2 kerf/2))
+                      :dx 0
+                      :dy 1
+                      :depth edge-material-thickness
+                      :tabs tabs-per-support-edge
+                      :kerf kerf)
+    (cl-svg:with-path path
+      (cl-svg:line-to (+ width/2 kerf/2)
+                      (+ height/2 kerf/2)))
+    (make-tabbed-line path width
+                      :sx (+ width/2 kerf/2)
+                      :sy (+ height/2 kerf/2 face-material-thickness)
+                      :dx -1
+                      :dy 0
+                      :depth face-material-thickness
+                      :tabs tabs-per-support-face
+                      :kerf kerf)
+
+    (cl-svg:with-path path
+      (cl-svg:line-to (- (+ width/2 kerf/2))
+                      (+ height/2 kerf/2)))
+
+    (make-tabbed-line path height
+                      :sx (- (+ width/2 kerf/2 edge-material-thickness))
+                      :sy (+ height/2 kerf/2)
+                      :dx 0
+                      :dy -1
+                      :depth edge-material-thickness
+                      :tabs tabs-per-support-edge
+                      :kerf kerf)
+
+    (cl-svg:with-path path
+      (cl-svg:close-path))
+
+    (cl-svg:draw scene (:path :d path)
+                 :fill cut-color
+                 :fill-opacity cut-opacity)
+    height))

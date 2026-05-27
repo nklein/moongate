@@ -82,6 +82,18 @@
                                              args))
           (setf last-height (apply #'draw-segment-edge group :radius inner-radius args))
           group)))
+    (decf yoff (1+ last-height))
+    (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) yoff))
+      (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
+        (let ((group (cl-svg:make-group scene ())))
+          (when draw-nominal
+            (apply #'draw-support-piece group
+                                        :kerf 0
+                                        :cut-color mark-color
+                                        :cut-opacity mark-opacity
+                                        args))
+          (setf last-height (apply #'draw-support-piece group args))
+          group)))
     (cl-svg:stream-out output-stream scene)))
 
 (defun draw-moongate (filename
