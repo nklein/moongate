@@ -38,7 +38,11 @@
                                                      "size-constants"
                                                      "material-constants"
                                                      "connection-constants"
-                                                     "face-shapes"))))))
+                                                     "face-shapes"))
+                 (:file "test-shapes" :depends-on ("package"
+                                                   "size-constants"
+                                                   "material-constants"))
+                 ))))
 
 (asdf:defsystem #:moongate/test
   :description "Tests for the MOONGATE package."

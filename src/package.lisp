@@ -23,4 +23,6 @@
            #:*mark-color*
            #:*float-format-precision*)
   (:export #:draw-moongate*
-           #:draw-moongate))
+           #:draw-moongate)
+  (:export #:draw-depth-test*
+           #:draw-depth-test))
