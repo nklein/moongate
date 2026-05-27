@@ -13,34 +13,48 @@
                                 (cut-opacity *cut-opacity*)
                                 (kerf *kerf*)
                               &allow-other-keys)
-  (cl-svg:draw group (:path :d (concatenate 'string
-                                            (cl-svg:move-to (- (/ obj-width 2))
-                                                            (- (/ obj-height 2)))
-                                            (cl-svg:line-to (/ obj-width 2)
-                                                            (- (/ obj-height 2)))
+  (let ((kerf/2 (/ kerf 2))
+        (obj-width/2 (/ obj-width 2))
+        (obj-height/2 (/ obj-height 2)))
+    (cl-svg:draw group (:path :d (concatenate 'string
+                                              (cl-svg:move-to (- (+ obj-width/2 kerf/2))
+                                                              (- (+ obj-height/2 kerf/2)))
+                                              (cl-svg:line-to (+ obj-width/2 kerf/2)
+                                                              (- (+ obj-height/2 kerf/2)))
 
-                                            (let ((path (cl-svg:make-path)))
-                                              (loop :with sx := (+ (/ obj-width 2))
-                                                    :for sy := (- (/ obj-height 2)) :then (+ sy
-                                                                                             (* thickness 2))
-                                                    :for thickness := (+ material-thickness
-                                                                         (* (1- stops) delta 1/2))
-                                                      :then (- thickness delta)
-                                                    :repeat stops
-                                                    :do (make-tabbed-line path (* thickness 2)
-                                                                          :sx sx
-                                                                          :sy sy
-                                                                          :dx 0
-                                                                          :dy 1
-                                                                          :tabs 1
-                                                                          :kerf kerf
-                                                                          :depth (* material-thickness -2)))
-                                              path)
-                                            (cl-svg:line-to-r (- (* material-thickness 3))
-                                                              0)
-                                            (cl-svg:close-path)))
-               :fill cut-color
-               :fill-opacity cut-opacity))
+                                              (let ((path (cl-svg:make-path)))
+                                                (loop :for sx := (+ obj-width/2 kerf/2)
+                                                      :for thickness := (+ material-thickness
+                                                                           (* stops delta 1/2))
+                                                        :then (- thickness delta)
+                                                      :for sy := (+ (- (+ obj-height/2 kerf/2))
+                                                                    kerf
+                                                                    (/ material-thickness 2))
+                                                        :then (+ sy (* 2 material-thickness))
+                                                      :repeat stops
+                                                      :do (make-tabbed-line path (* thickness 2)
+                                                                            :sx sx
+                                                                            :sy sy
+                                                                            :dx 0
+                                                                            :dy 1
+                                                                            :tabs 1
+                                                                            :kerf (- kerf)
+                                                                            :depth (* material-thickness -2)))
+                                                path)
+
+                                              (cl-svg:line-to (+ obj-width/2 kerf/2)
+                                                              (+ obj-height/2 kerf/2))
+                                              (cl-svg:line-to-r (- material-thickness
+                                                                   (+ obj-width
+                                                                      kerf))
+                                                                0)
+                                              (cl-svg:line-to-r 0
+                                                                (- material-thickness))
+                                              (cl-svg:line-to-r (- material-thickness)
+                                                                0)
+                                              (cl-svg:close-path)))
+                 :fill cut-color
+                 :fill-opacity cut-opacity)))
 
 (defun draw-depth-test* (output-stream
                          &rest

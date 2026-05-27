@@ -21,19 +21,21 @@
                (cl-svg:line-to-r x y))))
     (let* ((kerf/2 (/ kerf 2)) (tab-distance-on-center (/ length tabs))
            (tab-distance-on-center/4 (/ tab-distance-on-center 4)))
-      (cl-svg:line-to sx sy)
       (cl-svg:with-path path
+        (cl-svg:line-to sx sy)
         (line-to-r kerf/2 0))
       (loop :for k :from 0 :below tabs
             :do (cl-svg:with-path path
                   (line-to-r (- tab-distance-on-center/4 kerf/2)
                              0)
                   (line-to-r 0
-                             (- (+ depth kerf/2)))
+                             (- depth))
                   (line-to-r (+ (* 2 tab-distance-on-center/4) kerf)
                              0)
                   (line-to-r 0
-                             (+ depth kerf/2))
+                             depth)
                   (line-to-r (- tab-distance-on-center/4 kerf/2)
-                             0)))))
+                             0)))
+      (cl-svg:with-path path
+        (line-to-r kerf/2 0))))
   path)
