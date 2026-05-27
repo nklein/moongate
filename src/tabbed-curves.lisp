@@ -14,7 +14,7 @@
          (phi-increment (/ theta/2 tabs-per-face-edge 1/2))
          (phi-increment/4 (/ phi-increment 4)))
 
-    (loop :for phi :from theta/2 :by (- phi-increment)
+    (loop :for phi :downfrom theta/2 :by phi-increment
           :for k :from 0 :below tabs-per-face-edge
           :do (let* ((phi1 phi)
                      (phi2 (- phi phi-increment/4))

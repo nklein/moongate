@@ -2,7 +2,7 @@
 
 (in-package #:moongate)
 
-(defparameter *kerf* 1/10
+(defparameter *kerf* 1/100
   "Width of cutting tool (in inches)")
 
 (defparameter *edge-material-thickness* 1/8

@@ -77,11 +77,11 @@
          (cc (cos phi))
          (path (cl-svg:make-path)))
     (flet ((rotx (x y)
-             (+ (* x (+ support-material-thickness/2 (/ kerf 2)) cc)
-                (* y (+ tab-length/2 (/ kerf 2)) ss)))
+             (+ (* x (+ support-material-thickness/2 (/ (- kerf) 2)) cc)
+                (* y (+ tab-length/2 (/ (- kerf) 2)) ss)))
            (roty (x y)
-             (+ (* x (+ support-material-thickness/2 (/ kerf 2)) (- ss))
-                (* y (+ tab-length/2 (/ kerf 2)) cc))))
+             (+ (* x (+ support-material-thickness/2 (/ (- kerf) 2)) (- ss))
+                (* y (+ tab-length/2 (/ (- kerf) 2)) cc))))
       (loop :for k :from 0 :below tabs-per-support-face
             :for rr :from (+ inner-radius tab-length edge-material-thickness) :by tab-distance-on-center
             :do (let* ((cx (- (* rr ss) xoff))
@@ -89,12 +89,12 @@
                   (cl-svg:with-path path
                     (cl-svg:move-to (- cx (rotx -1 -1))
                                     (- cy (roty -1 -1)))
-                    (cl-svg:line-to (- cx (rotx  1 -1))
-                                    (- cy (roty  1 -1)))
-                    (cl-svg:line-to (- cx (rotx  1  1))
-                                    (- cy (roty  1  1)))
                     (cl-svg:line-to (- cx (rotx -1  1))
                                     (- cy (roty -1  1)))
+                    (cl-svg:line-to (- cx (rotx  1  1))
+                                    (- cy (roty  1  1)))
+                    (cl-svg:line-to (- cx (rotx  1 -1))
+                                    (- cy (roty  1 -1)))
                     (cl-svg:close-path)))))
     path))
 
@@ -109,8 +109,8 @@
                             (pieces *pieces*)
                             (edge-material-thickness *edge-material-thickness*)
                             (cut-color *cut-color*)
+                            (cut-opacity *cut-opacity*)
                             (supports-per-piece *supports-per-piece*)
-                            (stroke-width *stroke-width*)
                           &allow-other-keys)
   (let* ((theta (/ (* portion 2 pi)
                    pieces))
@@ -121,23 +121,20 @@
                   2))
          (phi-increment (/ theta supports-per-piece))
          (phi-increment/2 (/ phi-increment 2)))
-    (cl-svg:draw scene (:path :d (apply #'make-segment-face-path theta/2 xoff yoff args))
-                 :fill "none"
-                 :stroke cut-color
-                 :stroke-width stroke-width)
-    (loop :for phi :from (- theta/2 phi-increment/2) :by (- phi-increment)
-          :repeat supports-per-piece
-          :do (cl-svg:draw scene (:path :d (apply #'make-support-tab-holes-in-face-path
-                                                  phi
-                                                  xoff
-                                                  yoff
-                                                  :outer-radius outer-radius
-                                                  :inner-radius inner-radius
-                                                  :edge-material-thickness edge-material-thickness
-                                                  args))
-                           :fill "none"
-                           :stroke cut-color
-                           :stroke-width stroke-width))
+    (cl-svg:draw scene (:path :d (apply #'concatenate 'string
+                                        (apply #'make-segment-face-path theta/2 xoff yoff args)
+                                        (loop :for phi :downfrom (- theta/2 phi-increment/2) :by phi-increment
+                                              :repeat supports-per-piece
+                                              :collecting (apply #'make-support-tab-holes-in-face-path
+                                                                 phi
+                                                                 xoff
+                                                                 yoff
+                                                                 :outer-radius outer-radius
+                                                                 :inner-radius inner-radius
+                                                                 :edge-material-thickness edge-material-thickness
+                                                                 args))))
+                 :fill cut-color
+                 :fill-opacity cut-opacity)
     (+ (- outer-radius
           (* inner-radius (cos theta/2)))
        (* 2 kerf))))
