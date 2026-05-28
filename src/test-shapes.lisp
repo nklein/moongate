@@ -62,7 +62,7 @@
                          &key
                            (stops 5)
                            (delta 1/64)
-                           (draw-nominal nil)
+                           (draw-nominal-p *draw-nominal-p*)
                            (kerf *kerf*)
                            (cut-color *cut-color*)
                            (cut-opacity *cut-opacity*)
@@ -87,7 +87,7 @@
     (cl-svg:transform ((cl-svg:translate (/ sheet-width 2) (/ sheet-height -2)))
       (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
         (let ((group (cl-svg:make-group scene ())))
-          (when draw-nominal
+          (when draw-nominal-p
             (apply #'draw-depth-test-shape group obj-width obj-height
                    :kerf 0
                    :cut-color mark-color
@@ -103,7 +103,7 @@
                         &key
                           (stops 5)
                           (delta 1/64)
-                          (draw-nominal nil)
+                          (draw-nominal-p *draw-nominal-p*)
                           (kerf *kerf*)
                           (cut-color *cut-color*)
                           (cut-opacity *cut-opacity*)
@@ -114,7 +114,7 @@
                           (float-format-precision *float-format-precision*))
   (declare (ignore stops
                    delta
-                   draw-nominal
+                   draw-nominal-p
                    kerf
                    cut-color
                    cut-opacity

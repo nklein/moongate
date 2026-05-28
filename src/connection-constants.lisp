@@ -10,5 +10,7 @@
   "Number of tabs the supports use to stick into the face pieces")
 (defparameter *supports-per-piece* 5
   "Number of supports holding each front face away from the matching back face")
+(defparameter *overlap-edges-p* t
+  "Whether to make edge parts to allow overlapping")
 (defparameter *access-holes-p* t
   "Whether to include access holes in the edges")
