@@ -274,5 +274,12 @@
 
 #+(or)
 (moongate:draw-moongate #P"/tmp/mg.svg"
+                        :outer-radius 33
+                        :inner-radius 27
+                        :portion 3/4
+                        :pieces 4
+                        :support-height 5
+                        :sheet-width 48
+                        :sheet-height 24
                         :draw-nominal-p nil
                         :access-holes-p t)
