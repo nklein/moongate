@@ -17,5 +17,8 @@
 (defparameter *mark-opacity* 1/4
   "Opacity of marking pieces")
 
+(defparameter *draw-nominal-p* nil
+  "Whether to draw the kerf-free components")
+
 (defparameter *float-format-precision* 8
   "Number of decimal places when printing floating point numbers in SVG files")
