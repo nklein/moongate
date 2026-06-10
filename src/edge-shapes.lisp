@@ -98,7 +98,7 @@
                           &rest
                             args
                           &key
-                            (radius *outer-radius*)
+                            (radius (- *outer-radius* (/ *edge-material-thickness* 2)))
                             (portion *portion*)
                             (pieces *pieces*)
                             (kerf *kerf*)
