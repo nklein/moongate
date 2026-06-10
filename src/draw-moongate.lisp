@@ -74,14 +74,14 @@
         (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
           (let ((group (cl-svg:make-group scene ())))
             (when draw-nominal-p
-              (apply #'draw-segment-edge group :radius outer-radius
+              (apply #'draw-segment-edge group :radius (- outer-radius (/ edge-material-thickness 2))
                                                :kerf 0
                                                :cut-color mark-color
                                                :cut-opacity mark-opacity
                                                :extra-segments 0
                                                args))
             (setf last-height (apply #'draw-segment-edge group
-                                     :radius outer-radius
+                                     :radius (- outer-radius (/ edge-material-thickness 2))
                                      :extra-segments 0
                                      args))
             group)))
@@ -92,13 +92,15 @@
         (cl-svg:transform ((cl-svg:scale dpi (- dpi)))
           (let ((group (cl-svg:make-group scene ())))
             (when draw-nominal-p
-              (apply #'draw-segment-edge group :radius inner-radius
+              (apply #'draw-segment-edge group :radius (+ inner-radius (/ edge-material-thickness 2))
                                                :kerf 0
                                                :cut-color mark-color
                                                :cut-opacity mark-opacity
                                                :extra-segments 0
                                                args))
-            (setf last-height (apply #'draw-segment-edge group :radius inner-radius args))
+            (setf last-height (apply #'draw-segment-edge group
+                                     :radius (+ inner-radius (/ edge-material-thickness 2))
+                                     args))
             group))))
 
     ;; short and long edge pieces
@@ -272,12 +274,16 @@
                         :supports-per-piece 3
                         :tabs-per-face-edge 12)
 
+;;; Lightburn settings: speed 100, power 45/10
 #+(or)
 (moongate:draw-moongate #P"/tmp/mg.svg"
                         :outer-radius 33
                         :inner-radius 27
                         :portion 3/4
                         :pieces 4
+                        :edge-material-thickness 5/32
+                        :face-material-thickness 5/32
+                        :support-material-thickness 5/32
                         :support-height 5
                         :sheet-width 48
                         :sheet-height 24
